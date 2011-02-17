@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset="utf-8" />
+    <title>INCEPTION</title>
+    <link rel="stylesheet" href="demo/styles.css" />
+  </head>
+
+  <body>
+
+    <div id="treepane">
+
+      <div class="db">
+        <label for="databases">Database:</label>
+        <select id="databases" ></select>
+      </div>
+
+      <ul id="files"></ul>
+
+      <div id="panefooter">
+        <button class="minibutton left" id="properties"><span>Properties</span></button>
+        <button class="minibutton right" id="push"><span>Push</span></button>
+      </div>
+
+    </div>
+
+    <div id="editor"></div>
+
+    <div id="overlay"></div>
+
+    <div class="dialog" id="properties_dlg">
+        <h2>Properties</h2>
+        <div class="realcontent">
+          <table cellspacing="10">
+            <tr><td><label>Username:</label></td><td><input type="text" id="username" /></td></tr>
+            <tr><td><label>Password:</label></td><td><input type="password" id="password" /></td></tr>
+        </div>
+    </div>
+
+    <script src="../../../_utils/script/jquery.js"></script>
+    <script src="../../../_utils/script/jquery.couch.js"></script>
+
+    <script src="base64.js"></script>
+
+    <script src="demo/require.js"></script>
+    <script src="demo/boot.js"></script>
+
+  </body>
+
+</html>
