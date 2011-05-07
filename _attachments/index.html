@@ -4,47 +4,55 @@
   <head>
     <meta charset="utf-8" />
     <title>INCEPTION</title>
-    <link rel="stylesheet" href="demo/styles.css" />
+    <link rel="stylesheet" href="css/styles.css" />
   </head>
 
   <body>
 
     <div id="treepane">
 
-      <div class="db">
-        <label for="databases">Database:</label>
-        <select id="databases" ></select>
+      <button id="hide">show / Hide</button>
+
+      <div id="panel">
+        <button class="panelbutton" id="dblistbtn" title="Browse Databases">Browse Databases</button>
+        <button class="panelbutton" id="push" title="Push Couchapp">Push Couchapp</button>
+        <button class="panelbutton" id="launch" title="Launch Couchapp">Launch Couchapp</button>
       </div>
 
-      <ul id="files"></ul>
-
-      <div id="panefooter">
-        <button class="minibutton left" id="properties"><span>Properties</span></button>
-        <button class="minibutton right" id="push"><span>Push</span></button>
+      <div id="inner">
+        <div id="files"></div>
+        <div id="dblisting"></div>
       </div>
+    </div>
 
+    <div id="controlpanel">
+      <div id="log"></div>
+      <div id="consolewrapper">
+        <span>&gt;</span><input type="text" id="console" />
+        <button id="expandcontrolpanel">Expand</button>
+      </div>
     </div>
 
     <div id="editor"></div>
-
     <div id="overlay"></div>
 
-    <div class="dialog" id="properties_dlg">
-        <h2>Properties</h2>
-        <div class="realcontent">
-          <table cellspacing="10">
-            <tr><td><label>Username:</label></td><td><input type="text" id="username" /></td></tr>
-            <tr><td><label>Password:</label></td><td><input type="password" id="password" /></td></tr>
-        </div>
-    </div>
+    <!-- <div class="dialog" id="properties_dlg"> -->
+    <!--     <h2>Properties</h2> -->
+    <!--     <div class="realcontent"> -->
+    <!--       <table cellspacing="10"> -->
+    <!--         <tr><td><label>Username:</label></td><td><input type="text" id="username" /></td></tr> -->
+    <!--         <tr><td><label>Password:</label></td><td><input type="password" id="password" /></td></tr> -->
+    <!--     </div> -->
+    <!-- </div> -->
 
-    <script src="../../../_utils/script/jquery.js"></script>
-    <script src="../../../_utils/script/jquery.couch.js"></script>
+    <script src="js/jquery-1.5.2.min.js"></script>
+    <script src="js/jquery.couch2.js"></script>
 
-    <script src="base64.js"></script>
+    <script src="js/underscore.js"></script>
 
-    <script src="demo/require.js"></script>
-    <script src="demo/boot.js"></script>
+    <script src="inception/require.js"></script>
+    <script src="inception/utils.js"></script>
+    <script src="inception/boot.js"></script>
 
   </body>
 

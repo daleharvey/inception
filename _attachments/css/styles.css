@@ -1,0 +1,358 @@
+* {
+    padding:0px;
+    margin:0px;
+}
+
+html {
+    height: 100%;
+    overflow: hidden;
+}
+
+body {
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%;
+    font-family: Arial, Helvetica, sans-serif, Tahoma, Verdana, sans-serif;
+    font-size: 13.34px;
+}
+
+ul {
+    list-style:none;
+}
+
+em {
+    font-style:normal;
+    font-weight:bold;
+}
+
+label {
+    font-weight:bold;
+}
+
+#editor {
+    -moz-transition: all 0.2s ease-in-out;
+    position: absolute;
+    left: 220px;
+    right:0px;
+    top:0px;
+    bottom:30px;
+    background: white;
+}
+
+.max_console #editor, .max_console #treepane {
+    bottom:100px;
+}
+
+
+#treepane {
+    -moz-transition: all 0.2s ease-in-out;
+    background: #F5F5F5;
+    position:absolute;
+    width:220px;
+    left:0px;
+    top:0px;
+    bottom:30px;
+}
+
+select {
+    margin:5px;
+}
+
+footer { background:#333; padding:5px; position:fixed; bottom:0px; left:0px; right:0px; height:30px;}
+
+#treepane select {
+}
+
+#files {
+}
+#files a {
+    display:block;
+    cursor:pointer;
+    padding:3px;
+    white-space:nowrap;
+}
+/* #files a:hover { */
+/*     background:#EEE; */
+/* } */
+#files a.selected {
+    font-weight:bold;
+}
+
+#files > li {
+    margin-top:10px;
+}
+
+.right {
+    float:right;
+}
+.left {
+    float:left;
+}
+
+.minibutton {
+    -moz-border-radius: 3px 3px 3px 3px;
+    background: -moz-linear-gradient(center top , #F4F4F4, #ECECEC) repeat scroll 0 0 transparent;
+    border: 1px solid #D4D4D4;
+    color: #333333;
+    cursor: pointer;
+    font-family: helvetica,arial,freesans,clean,sans-serif;
+    font-size: 11px;
+    font-weight: bold;
+    overflow: visible;
+    padding: 0 0 0 0px;
+    position: relative;
+    text-shadow: 1px 1px 0 #FFFFFF;
+    white-space: nowrap;
+}
+.minibutton > span {
+    display: block;
+    height: 21px;
+    line-height: 21px;
+    padding: 0 9px 0 9px;
+}
+
+#panefooter {
+    width:180px;
+    padding:10px;
+    position:absolute;
+    bottom:0px;
+    left:0px;
+}
+
+#overlay {
+    display:none;
+    height: 100%;
+    left: 0;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    background:#666;
+    z-index:100;
+    opacity:0.6;
+}
+
+.dialog h2 {
+    border-bottom:1px solid #AAA;
+    padding:10px;
+}
+
+.nav {
+    padding:5px;
+    display:block;
+}
+.realcontent {
+    background:none repeat scroll 0 0 #E0E0E0;
+    padding:10px;
+}
+.dialog {
+    /* background: -moz-linear-gradient(100% 100% 107deg, #FFFFFF, #F4F9FB); */
+    display:none;
+    position:absolute;
+    z-index:200;
+    left:50%;
+    margin-left:-225px;
+    background:white;
+    color: #333333;
+    font-size: 12px;
+    margin-top:65px;
+    width:450px;
+    -moz-border-radius: 5px 5px 5px 5px;
+    -moz-box-shadow: 0 0 18px rgba(255, 255, 255, 0.4);
+    border: 3px solid #AAA;
+    -moz-border-radius: 4px 4px 4px 4px;
+}
+
+.db h3 { color:#666; }
+.db { display:block; border-bottom:1px solid black; padding:5px;}
+#files li {
+    padding-left:5px;
+}
+
+#files li ul {
+    display:none;
+}
+
+.node, .file {
+    text-indent:5px;
+    font-size:12px;
+    cursor:pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    user-select: none;
+    text-decoration:none;
+    color:#000;
+    text-indent:24px;
+}
+.file {
+    text-indent:35px;
+}
+
+.db > .node {
+    background:url(../img/icons/database.png) 16px 0px no-repeat;
+}
+.file {
+    background:url(../img/icons/script.png) 16px 0px no-repeat;
+}
+.node {
+    background:url(../img/icons/folder.png) 16px 0px no-repeat;
+}
+
+.arrow {
+    -webkit-transition: all 0.2s ease-in-out;
+    -moz-transition: all 0.2s ease-in-out;
+    -moz-transform: rotate(-45deg);
+    -webkit-transition: all 0.2s ease-in-out;
+    -webkit-transform: rotate(-45deg);
+    pointer-events:none;
+    margin-top:2px;
+    float:left;
+    border-color: transparent #666 #666 transparent;
+    border-style: solid;
+    border-width: 4px;
+    height: 0;
+    line-height: 0;
+    width: 0;
+}
+
+.expanded {
+    margin-top:0px;
+    -moz-transform: rotate(45deg);
+}
+
+.db {
+    border-bottom: 1px solid #B2B2B2;
+    border-top: 1px solid white;
+    padding:10px;
+    background: -moz-linear-gradient(center bottom , #F5F5F5 0%, #FFFFFF 100%) repeat scroll 0 0 transparent;
+}
+
+.db h3 {
+    color: #3D444D;
+    line-height: 14px;
+    font-size:12px;
+}
+
+.db a {
+    color:#666;
+    cursor:pointer;
+    font-size:11px;
+    margin-left:10px;
+}
+
+.ddocheader {
+    margin:10px;
+}
+
+#inner {
+    overflow:auto;
+    overflow-y:scroll;
+    bottom:0px;
+    right:0px;
+    position:absolute;
+    left:32px;
+    top:20px;
+}
+
+#panel {
+    overflow:hidden;
+    background:#333;
+    width:32px;
+    position:absolute;
+    top:20px;
+    bottom:0px;
+}
+
+#panel button {
+    text-indent:-9999px;
+    margin:4px 4px 0 4px;
+    width:24px;
+    height:24px;
+    background:#333;
+    border:1px solid #555;
+}
+
+#hide {
+    display:block;
+    border:0px;
+    border-radius:0px;
+    background:#555;
+    margin:0px;
+    padding:0px;
+    width:100%;
+    color:#AAA
+    height:20px;
+    line-height:20px;
+    height:20px;
+    cursor:pointer;
+    text-align:left;
+    text-indent:-999px;
+    background:#555 url(../img/icons/playback_rew_icon.png) no-repeat 8px center;
+}
+
+.minimised #hide {
+    background:#555 url(../img/icons/playback_ff_icon.png) no-repeat 8px center;
+}
+
+#panel button {
+    opacity:0.7;
+}
+#panel button:hover {
+    opacity:1;
+}
+
+#panel #dblistbtn {
+    background:url(../img/icons/list_bullets_icon.png) no-repeat center center;
+}
+
+#panel #launch {
+    background:url(../img/icons/browser_icon.png) no-repeat center center;
+}
+#panel #push {
+    background:url(../img/icons/doc_export_icon.png) no-repeat center center;
+}
+
+.max_console #controlpanel {
+    height:100px;
+}
+
+#controlpanel {
+    font-family: "Courier New","Andale Mono",monospace;
+    background:black;
+    position:absolute;
+    bottom:0px;
+    height:30px;
+    color:white;
+    left:0px;
+    right:0px;
+}
+
+#consolewrapper {
+    position:absolute;
+    bottom:0px;
+    height:19px;
+    background:black;
+    padding:5px;
+    border-top: 1px solid #666666;
+    left:0px;
+    right:0px;
+}
+
+#consolewrapper span {
+    font-weight:bold;
+    margin:0px 10px;
+}
+#console {
+    font-family: "Courier New","Andale Mono",monospace;
+    border-radius:3px;
+    border:0px;
+    padding:2px;
+    background:#555;
+    color:#CCC;
+}
+
+#log { position:absolute; top:0px; bottom:30px; overflow:auto; left:0px; right:0px;}
+
+.logmsg { border-bottom:1px solid #666;  color: #CCCCCC;
+    padding: 2px;}
