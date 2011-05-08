@@ -1,3 +1,0 @@
-[submodule "ace"]
-	path = ace-src
-	url = git@github.com:daleharvey/ace.git
