@@ -6,6 +6,8 @@ define(function(require, exports, module) {
     var Renderer = require("ace/virtual_renderer").VirtualRenderer;
     var theme = require("ace/theme/twilight");
 
+    var JavaScriptMode = require("ace/mode/javascript").Mode;
+
     var Router = require("router").Router;
     var FileTree = require("filetree").FileTree;
     var CouchData = require("couchdata").CouchData;
@@ -20,82 +22,41 @@ define(function(require, exports, module) {
 
     var container = document.getElementById("editor");
     env.editor = new Editor(new Renderer(container, theme));
+    env.editor.getSession().setMode(new JavaScriptMode());
 
     window.onresize = function onResize() {
       env.editor.resize();
     }; window.onresize();
 
-    var Buffer = function(_name, _content) {
+    var Buffers = IBuffers.Buffers(env.editor);
 
-      var _dirty = false;
+    // Intercept console.logs and display them in our own log as well
+    (function() {
+      var tmp = console.log || null,
+      $log = $("#log");
 
-      function name() {
-        return _name;
-      }
-
-      function content(data) {
-        if (data) {
-          if (data !== _content) {
-            _content = data;
-            _dirty = true;
-          }
-        } else {
-          return _content;
+      console.log = function(data) {
+        if (tmp) {
+          try {
+            tmp(data);
+          } catch(err) { }
         }
-      }
-
-      function dirty() {
-        return _dirty;
-      }
-
-      return {        name: name,
-        dirty: dirty,
-        content: content
+        $log.append("<div class='logmsg'>" + (data && data.toString()) + "</div>");
+        $log.attr({scrollTop: $log.attr("scrollHeight") });
       };
-    };
+    })();
 
-    var Buffers = (function(Editor) {
+    var localData = {};
+    for (var x in localStorage) {
+      localData[x] = JSON.parse(localStorage[x]);
+    }
 
-      var _buffers = {},
-      _length = 0,
-      openBufferName = null;
-
-      function openBuffer(name, content) {
-        ensureUpdated();
-        if (typeof _buffers[name] === "undefined") {
-          _length += 1;
-          _buffers[name] = new Buffer(name, content);
-        }
-        openBufferName = name;
-        Editor.getSelection().selectAll();
-        Editor.onTextInput(_buffers[name].content());
+    function persistLocalStorage() {
+      for (var x in localData) {
+        localStorage[x] = JSON.stringify(localData[x]);
       }
-
-      function length() {
-        return length;
-      }
-
-      function dirtyBuffers() {
-        // return _(_buffers).chain().filter(function(val, key) { return val.dirty(); })
-        //   .map(function(val, key) { console.log(arguments);return {key:key, val:val}; })
-        //   .value();
-        return _buffers;
-      }
-
-      function ensureUpdated() {
-        if (openBufferName) {
-          _buffers[openBufferName].content(Editor.session.toString());
-        }
-      }
-
-      return {
-        ensureUpdated:ensureUpdated,
-        length: length,
-        openBuffer: openBuffer,
-        dirtyBuffers: dirtyBuffers
-      };
-
-    })(env.editor);
+      return true;
+    }
 
     var width = $("#treepane").width();
     $("#hide").bind("mousedown", function() {
@@ -124,37 +85,29 @@ define(function(require, exports, module) {
       }
     });
 
-    Router.get('!/:db/_design/:ddoc/_attachments/*file',
-               function (db, ddoc, path) {
-                 CouchData.readAttachment(db, "_design/" + ddoc, path).then(
-                   function(data) {
-                     Buffers.openBuffer(Router.url(), data);
-                   });
-               });
+    Router.get('!/:db/_design/:ddoc/_attachments/*file', function (db, ddoc, path) {
+      CouchData.readAttachment(db, "_design/" + ddoc, path).then(function(data) {
+        Buffers.openBuffer(Router.url(), data);
+      });
+    });
 
-    Router.get('!/:db/_design/:ddoc/views/:view/:type',
-               function (db, ddoc, view, type) {
-                 CouchData.readView(db, "_design/" + ddoc, view, type).then(
-                   function(data) {
-                     Buffers.openBuffer(Router.url(), data);
-                   });
-               });
+    Router.get('!/:db/_design/:ddoc/views/:view/:type', function (db, ddoc, view, type) {
+      CouchData.readView(db, "_design/" + ddoc, view, type).then(function(data) {
+        Buffers.openBuffer(Router.url(), data);
+      });
+    });
 
-    Router.get('!/:db/_design/:ddoc/filters/:filter',
-               function (db, ddoc, filter) {
-                 CouchData.readFilter(db, "_design/" + ddoc, filter).then(
-                   function(data) {
-                     Buffers.openBuffer(Router.url(), data);
-                   });
-               });
+    Router.get('!/:db/_design/:ddoc/filters/:filter', function (db, ddoc, filter) {
+      CouchData.readFilter(db, "_design/" + ddoc, filter).then(function(data) {
+        Buffers.openBuffer(Router.url(), data);
+      });
+    });
 
-    Router.get('!/:db/_design/:ddoc/updates/:update',
-               function (db, ddoc, update) {
-                 CouchData.readUpdate(db, "_design/" + ddoc, update).then(
-                   function(data) {
-                     Buffers.openBuffer(Router.url(), data);
-                   });
-               });
+    Router.get('!/:db/_design/:ddoc/updates/:update', function (db, ddoc, update) {
+      CouchData.readUpdate(db, "_design/" + ddoc, update).then(function(data) {
+        Buffers.openBuffer(Router.url(), data);
+      });
+    });
 
     CouchData.loadDatabases().then(function (databases) {
       var html = "<ul>";
@@ -227,6 +180,9 @@ define(function(require, exports, module) {
     $("#dblisting").live('mousedown', function(e) {
       var $el = $(e.target);
       if ($el.is("a.ddoc")) {
+        localData.config.selectedDb = $el.data("db");
+        localData.config.selectedDdoc = $el.data("ddoc");
+        persistLocalStorage();
         loadddoc($el.data("db"), $el.data("ddoc"));
       }
     });
@@ -250,12 +206,17 @@ define(function(require, exports, module) {
       var url = "/" + db + "/" + ddoc + "/" + doc.name;
       console.log("=> " + url);
       $.ajax({
+        beforeSend: function(req) {
+          req.setRequestHeader("Accept", "text/xml");
+        },
         contentType:orig[doc.name].content_type,
         type:"PUT",
         url: url + "?rev=" + rev,
         data: doc.data,
         dataType:"json",
         success: function(data) {
+          var revpos = parseInt(data.rev.split("-")[0], 10);
+          orig[doc.name].revpos = revpos;
           saveAttachments(attachments, orig, db, ddoc, data.rev, callback);
         }
       });
@@ -277,7 +238,6 @@ define(function(require, exports, module) {
       couch.db(db).get(ddoc).then(function (data) {
         var x = generateDDoc(db, ddoc, data, Buffers.dirtyBuffers());
         saveAttachments(x.attachments, x.ddoc._attachments, db, ddoc, data._rev, function(newRev) {
-          //delete x.ddoc._attachments;
           x.ddoc._rev = newRev;
           console.log("=> " + ddoc);
           couch.db(db).put(ddoc, JSON.stringify(x.ddoc)).then(function() {
@@ -302,23 +262,15 @@ define(function(require, exports, module) {
       window.open("/" + match[1] + "/_design/" + match[2] + "/index.html");
     });
 
+    if (!localData.config) {
+      localData.config = {};
+    }
+
+    if (localData.config.selectedDdoc && localData.config.selectedDb) {
+      loadddoc(localData.config.selectedDb, localData.config.selectedDdoc);
+    }
+
     Router.init();
-
-    // Intercept console.logs and display them in our own log as well
-    (function() {
-
-      var tmp = console.log || null,
-          $log = $("#log");
-
-      console.log = function(data) {
-        if (tmp) {
-          tmp(data);
-        }
-        $log.append("<div class='logmsg'>" + data.toString() + "</div>");
-        $log.attr({scrollTop: $log.attr("scrollHeight") });
-      };
-
-    })();
 
   };
 

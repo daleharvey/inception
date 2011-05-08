@@ -18,7 +18,7 @@
       dfd.resolve(cache[key]);
       return dfd.promise();
     } else {
-      var ajaxOpts = $.extend(defaults, opts);
+      var ajaxOpts = $.extend({}, defaults, opts);
       ajaxOpts.dataFilter = function (data) {
         cache[key] = JSON.parse(data);
         return data;
