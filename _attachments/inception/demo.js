@@ -158,9 +158,6 @@ define(function(require, exports, module) {
       var url = "/" + db + "/" + ddoc + "/" + doc.name;
       console.log("=> " + url);
       $.ajax({
-        beforeSend: function(req) {
-          req.setRequestHeader("Accept", "text/xml");
-        },
         contentType:orig[doc.name].content_type,
         type:"PUT",
         url: url + "?rev=" + rev,
