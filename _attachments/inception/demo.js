@@ -85,30 +85,6 @@ define(function(require, exports, module) {
       }
     });
 
-    Router.get('!/:db/_design/:ddoc/_attachments/*file', function (db, ddoc, path) {
-      CouchData.readAttachment(db, "_design/" + ddoc, path).then(function(data) {
-        Buffers.openBuffer(Router.url(), data);
-      });
-    });
-
-    Router.get('!/:db/_design/:ddoc/views/:view/:type', function (db, ddoc, view, type) {
-      CouchData.readView(db, "_design/" + ddoc, view, type).then(function(data) {
-        Buffers.openBuffer(Router.url(), data);
-      });
-    });
-
-    Router.get('!/:db/_design/:ddoc/filters/:filter', function (db, ddoc, filter) {
-      CouchData.readFilter(db, "_design/" + ddoc, filter).then(function(data) {
-        Buffers.openBuffer(Router.url(), data);
-      });
-    });
-
-    Router.get('!/:db/_design/:ddoc/updates/:update', function (db, ddoc, update) {
-      CouchData.readUpdate(db, "_design/" + ddoc, update).then(function(data) {
-        Buffers.openBuffer(Router.url(), data);
-      });
-    });
-
     CouchData.loadDatabases().then(function (databases) {
       var html = "<ul>";
       _.each(databases, function(db, dbname) {
@@ -173,30 +149,6 @@ define(function(require, exports, module) {
       };
     }
 
-    $("#expandcontrolpanel").bind('mousedown', function () {
-      $("body").toggleClass("max_console");
-    });
-
-    $("#dblisting").live('mousedown', function(e) {
-      var $el = $(e.target);
-      if ($el.is("a.ddoc")) {
-        localData.config.selectedDb = $el.data("db");
-        localData.config.selectedDdoc = $el.data("ddoc");
-        persistLocalStorage();
-        loadddoc($el.data("db"), $el.data("ddoc"));
-      }
-    });
-
-    $("#dblistbtn").bind('mousedown', function() {
-      ensureNotMinimised();
-      $("#dblisting").show();
-      $("#files").hide();
-    });
-
-    $("#couchapplist").bind('change', function() {
-      loadDb($(this).val());
-    });
-
     function saveAttachments(attachments, orig, db, ddoc, rev, callback) {
       if (attachments.length === 0) {
         callback(rev);
@@ -222,7 +174,7 @@ define(function(require, exports, module) {
       });
     }
 
-    $("#push").bind('mousedown', function() {
+    function doPush() {
       Buffers.ensureUpdated();
       var hasConsole = $("body").hasClass("max_console");
       if (!hasConsole) {
@@ -251,6 +203,34 @@ define(function(require, exports, module) {
           });
         });
       });
+    }
+
+    $("#expandcontrolpanel").bind('mousedown', function () {
+      $("body").toggleClass("max_console");
+    });
+
+    $("#dblisting").live('mousedown', function(e) {
+      var $el = $(e.target);
+      if ($el.is("a.ddoc")) {
+        localData.config.selectedDb = $el.data("db");
+        localData.config.selectedDdoc = $el.data("ddoc");
+        persistLocalStorage();
+        loadddoc($el.data("db"), $el.data("ddoc"));
+      }
+    });
+
+    $("#dblistbtn").bind('mousedown', function() {
+      ensureNotMinimised();
+      $("#dblisting").show();
+      $("#files").hide();
+    });
+
+    $("#couchapplist").bind('change', function() {
+      loadDb($(this).val());
+    });
+
+    $("#push").bind('mousedown', function() {
+      doPush();
     });
 
     $("#editor").bind("webkitTransitionEnd transitionend", function() {
@@ -262,6 +242,7 @@ define(function(require, exports, module) {
       window.open("/" + match[1] + "/_design/" + match[2] + "/index.html");
     });
 
+    // Load data from config
     if (!localData.config) {
       localData.config = {};
     }
@@ -269,6 +250,31 @@ define(function(require, exports, module) {
     if (localData.config.selectedDdoc && localData.config.selectedDb) {
       loadddoc(localData.config.selectedDb, localData.config.selectedDdoc);
     }
+
+    // Setup Routes
+    Router.get('!/:db/_design/:ddoc/_attachments/*file', function (db, ddoc, path) {
+      CouchData.readAttachment(db, "_design/" + ddoc, path).then(function(data) {
+        Buffers.openBuffer(Router.url(), data);
+      });
+    });
+
+    Router.get('!/:db/_design/:ddoc/views/:view/:type', function (db, ddoc, view, type) {
+      CouchData.readView(db, "_design/" + ddoc, view, type).then(function(data) {
+        Buffers.openBuffer(Router.url(), data);
+      });
+    });
+
+    Router.get('!/:db/_design/:ddoc/filters/:filter', function (db, ddoc, filter) {
+      CouchData.readFilter(db, "_design/" + ddoc, filter).then(function(data) {
+        Buffers.openBuffer(Router.url(), data);
+      });
+    });
+
+    Router.get('!/:db/_design/:ddoc/updates/:update', function (db, ddoc, update) {
+      CouchData.readUpdate(db, "_design/" + ddoc, update).then(function(data) {
+        Buffers.openBuffer(Router.url(), data);
+      });
+    });
 
     Router.init();
 
