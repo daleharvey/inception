@@ -86,7 +86,7 @@ define(function(require, exports, module) {
     });
 
     Router.get('!/:db/_design/:ddoc/_attachments/*file', function (db, ddoc, path) {
-      couch.db(db).get("_design/" + ddoc + "/" + path).then(function (data) {
+      couch.db(db).getAttachment("_design/" + ddoc + "/" + path).then(function (data) {
         Buffers.openBuffer(Router.url(), data);
       });
     });

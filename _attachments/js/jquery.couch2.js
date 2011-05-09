@@ -70,6 +70,16 @@
       get: function(id) {
         return makeRequest({url:this.uri + id, type:"GET"});
       },
+      
+      getAttachment: function(id) {
+        var opts = {
+          url:this.uri + id, 
+          type:"GET", 
+          contentType: "application/x-www-form-urlencoded", 
+          dataType: null
+        }
+        return $.ajax($.extend({}, defaults, opts)).promise();
+      },
 
       put: function(id, data) {
         return makeRequest({url:this.uri + id, type:"PUT", data:data});
