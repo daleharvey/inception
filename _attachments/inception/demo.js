@@ -72,17 +72,26 @@ define(function(require, exports, module) {
 
     FileTree.init('#files');
 
-    FileTree.nodeSelected(function (node) {
-      if (node.is(".design_doc") && !node.data("loaded")) {
-        var db = node.data("db"),
-            ddoc = node.data("ddoc");
-        CouchData.fetchddoc(db, ddoc).then(function (data) {
-          var html = $(CouchData.generateHTML(data, db, ddoc));
-          FileTree.appendNode(node, html);
-          html.show();
-          node.attr("data-loaded", "true");
-        });
+    FileTree.nodeSelected(function (node, expand) {
+      var parents = $.makeArray($(node).parents("li"));
+      parents.reverse();
+
+      var x = _.map(parents, function(obj) {
+        return $.trim($(obj).children("a").text());
+      }).join("/");
+
+      var id = localData.config.selectedDb + "/" +
+        localData.config.selectedDdoc;
+
+      if (!localData.config.selectedNodes) {
+        localData.config.selectedNodes = {};
       }
+      if (!localData.config.selectedNodes[id]) {
+        localData.config.selectedNodes[id] = {};
+      }
+
+      localData.config.selectedNodes[id][x] = expand;
+      persistLocalStorage();
     });
 
     CouchData.loadDatabases().then(function (databases) {
@@ -105,6 +114,24 @@ define(function(require, exports, module) {
         html += CouchData.generateHTML(x, database, data._id);
         $("#dblisting").hide();
         $("#files").empty().append(html).show();
+
+        var id = localData.config.selectedDb + "/" +
+          localData.config.selectedDdoc;
+
+        if (!localData.config.selectedNodes) {
+          localData.config.selectedNodes = {};
+        }
+        if (!localData.config.selectedNodes[id]) {
+          localData.config.selectedNodes[id] = {};
+        }
+
+        var files = $("#files");
+        _.each(localData.config.selectedNodes[id], function(obj, key) {
+          if (obj) {
+            FileTree.expandNode(files.find("[data-name='" + key + "'] > a"));
+          }
+        });
+
       });
     }
 

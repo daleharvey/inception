@@ -23,13 +23,14 @@ define(function(require, exports, module) {
     }
 
     function expandNode(node) {
-      nodeSelectedCB(node);
       var subtree = node.parent("li").children("ul");
       var arrow = node.find(".arrow");
-      if (subtree.is(":visible")) {
-        arrow.removeClass("expanded");
-      } else {
+      var expand = !subtree.is(":visible");
+      nodeSelectedCB(node, expand);
+      if (expand) {
         arrow.addClass("expanded");
+      } else {
+        arrow.removeClass("expanded");
       }
       subtree.toggle();
     }
@@ -42,6 +43,7 @@ define(function(require, exports, module) {
       init:init,
       nodeSelected:nodeSelected,
       setHTML: setHTML,
+      expandNode: expandNode,
       appendNode:appendNode
     };
 
