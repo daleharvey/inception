@@ -280,6 +280,10 @@ define(function(require, exports, module) {
       loadddoc(localData.config.selectedDb, localData.config.selectedDdoc);
     }
 
+    if (localData.config.maxConsole) {
+        $("body").addClass("max_console");
+    }
+
     // Setup Routes
     Router.get('!/:db/_design/:ddoc/_attachments/*file', function (db, ddoc, path) {
       CouchData.readAttachment(db, "_design/" + ddoc, path).then(function(data) {
