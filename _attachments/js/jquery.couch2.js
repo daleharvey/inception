@@ -13,7 +13,7 @@
     return vhost;
   }
 
-  var defaults = {
+  couch.defaults = {
     vhost: true,
     dataType:"json",
     contentType: "application/json",
@@ -26,10 +26,10 @@
   };
   
   if ( !inVhost() ) {
-    defaults.vhost = false
+    couch.defaults.vhost = false
     var real_db = document.location.href.split( '/' )[ 3 ],
         real_ddoc = unescape( document.location.href ).split( '/' )[ 5 ];
-    defaults.url = "/" + real_db + "/_design/" + real_ddoc + "/_rewrite/";
+    couch.defaults.url = "/" + real_db + "/_design/" + real_ddoc + "/_rewrite/";
   }
 
   function makeRequest(opts) {
@@ -39,7 +39,7 @@
       dfd.resolve(cache[key]);
       return dfd.promise();
     } else {
-      var ajaxOpts = $.extend({}, defaults, opts);
+      var ajaxOpts = $.extend({}, couch.defaults, opts);
       ajaxOpts.dataFilter = function (data) {
         cache[key] = JSON.parse(data);
         return data;
@@ -51,21 +51,25 @@
   couch.clearCache = function() {
     cache = {};
   };
+  
+  couch.root = function() {
+    return couch.defaults.url + couch.defaults.couch;
+  }
 
   couch.get = function(url) {
-    return makeRequest({url: defaults.url + defaults.couch + url, type:'GET'});
+    return makeRequest({url: couch.root() + url, type:'GET'});
   };
       
   couch.allDbs = function() {
-    return makeRequest($.extend({}, defaults, {
-      url: defaults.url + defaults.couch + "/_all_dbs"
+    return makeRequest($.extend({}, couch.defaults, {
+      url: couch.root() + "/_all_dbs"
     }));
   };
 
   couch.db = function(name) {
     return {
       name: name,
-      uri: defaults.url + defaults.couch + "/" + name + "/",
+      uri: couch.root() + "/" + name + "/",
 
       get: function(id) {
         return makeRequest({url:this.uri + id, type:"GET"});
@@ -78,7 +82,7 @@
           contentType: "application/x-www-form-urlencoded", 
           dataType: null
         }
-        return $.ajax($.extend({}, defaults, opts)).promise();
+        return $.ajax($.extend({}, couch.defaults, opts)).promise();
       },
 
       put: function(id, data) {
@@ -86,7 +90,7 @@
       },
 
       designDocs: function() {
-        return makeRequest($.extend({}, defaults, {
+        return makeRequest($.extend({}, couch.defaults, {
           url: this.uri + "/_all_docs",
           data: {startkey:'"_design/"', endkey:'"_design0"', include_docs:true}
         }));
