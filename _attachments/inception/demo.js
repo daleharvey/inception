@@ -199,17 +199,22 @@ define(function(require, exports, module) {
     }
 
     function doPush() {
+
       Buffers.ensureUpdated();
+
       var hasConsole = $("body").hasClass("max_console");
       if (!hasConsole) {
         $("body").addClass("max_console");
       }
-      var match = Router.matchesCurrent("!/:db/_design/:ddoc/*rest");
-      if (!match) {
+
+      if (!localData.config.selectedDb || !localData.config.selectedDdoc) {
         console.log("Nothing to push");
         return;
       }
-      var db = match[1], ddoc = "_design/" + match[2];
+
+      var db = localData.config.selectedDb;
+      var ddoc = localData.config.selectedDdoc;
+
       console.log("Starting push " + ddoc + " to " + db);
       couch.db(db).get(ddoc).then(function (data) {
         var x = generateDDoc(db, ddoc, data, Buffers.dirtyBuffers());
