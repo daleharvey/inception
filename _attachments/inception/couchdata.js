@@ -36,10 +36,10 @@ define(function(require, exports, module) {
         }
         var newarr = arr.slice();
         newarr.push(key);
-        var isEmpty = typeof val !== "object" || $.isEmptyObject(val);;
+        var isEmpty = typeof val !== "object" || $.isEmptyObject(val);
         var href = isEmpty ? 'href="#!/' + db + '/' + ddoc + '/' + newarr.join('/') + '" ' : '';
         var arrow = !isEmpty ? '<div class="arrow open">&nbsp;</div>' : '';
-        html += "<li><a " + href + "class='" +
+        html += "<li data-name='"+newarr.join('/')+"'><a " + href + "class='" +
           (isEmpty ? 'file' : 'folder node') + "'>" + arrow + key + "</a>";
         if (typeof val == "object") {
           html += generateHTML(val, db, ddoc, newarr);
