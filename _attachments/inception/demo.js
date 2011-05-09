@@ -112,7 +112,8 @@ define(function(require, exports, module) {
         var x = CouchData.transformDDoc(data);
         html = "<div class='ddocheader'><h3>" + database + "</h3>" + ddoc + "</div>";
         html += CouchData.generateHTML(x, database, data._id);
-        $("#dblisting").hide();
+
+        $("#inner > div").hide();
         $("#files").empty().append(html).show();
 
         var id = localData.config.selectedDb + "/" +
@@ -177,23 +178,48 @@ define(function(require, exports, module) {
     }
 
     function saveAttachments(attachments, orig, db, ddoc, rev, callback) {
+
+      var promise;
+
       if (attachments.length === 0) {
-        callback(rev);
-        return;
+        var defer = $.Deferred();
+        promise = defer.promise();
+        defer.resolveWith(rev, "success", promise);
+      } else {
+
+        jQuery.each(attachments, function(_, requestData) {
+          function makeRequest(data) {
+            var revpos = parseInt(data.rev.split("-")[0], 10);
+            orig[requestData.name].revpos = revpos;
+            return $.ajax({
+              type: "PUT",
+              headers: {"Accept":"application/json"},
+              url: "/" + db + "/" + ddoc + "/" + requestData.name + "?rev=" + data.rev,
+              data: requestData.data,
+              dataType:"json"
+            });
+          }
+          if (!promise) {
+            promise = makeRequest({rev:rev}).promise();
+          } else {
+            promise = promise.pipe(makeRequest);
+          }
+        });
       }
-      var doc = attachments.shift();
-      var url = "/" + db + "/" + ddoc + "/" + doc.name;
-      console.log("=> " + url);
-      $.ajax({
-        contentType:orig[doc.name].content_type,
-        type:"PUT",
-        url: url + "?rev=" + rev,
-        data: doc.data,
-        dataType:"json",
-        success: function(data) {
-          var revpos = parseInt(data.rev.split("-")[0], 10);
-          orig[doc.name].revpos = revpos;
-          saveAttachments(attachments, orig, db, ddoc, data.rev, callback);
+      return promise;
+    }
+
+    function render(tpl, data) {
+      return Mustache.to_html($(tpl).html(), data);
+    }
+
+
+    function renderLogin() {
+      $.ajax({url:"/_session", dataType: "json"}).then(function(data) {
+        if (data.userCtx.name) {
+          $("#settings").html(render("#loggedin", {name:data.userCtx.name}));
+        } else {
+          $("#settings").html(render("#loggedout", {}));
         }
       });
     }
@@ -218,19 +244,23 @@ define(function(require, exports, module) {
       console.log("Starting push " + ddoc + " to " + db);
       couch.db(db).get(ddoc).then(function (data) {
         var x = generateDDoc(db, ddoc, data, Buffers.dirtyBuffers());
-        saveAttachments(x.attachments, x.ddoc._attachments, db, ddoc, data._rev, function(newRev) {
-          x.ddoc._rev = newRev;
-          console.log("=> " + ddoc);
-          couch.db(db).put(ddoc, JSON.stringify(x.ddoc)).then(function() {
-            couch.clearCache();
-            console.log("Push complete!");
-            if (!hasConsole) {
-              setTimeout(function () {
-                $("body").removeClass("max_console");
-              }, 2000);
-            }
+        saveAttachments(x.attachments, x.ddoc._attachments, db, ddoc, data._rev)
+          .done(function(newRev) {
+            x.ddoc._rev = newRev.rev;
+            console.log("=> " + ddoc);
+            couch.db(db).put(ddoc, JSON.stringify(x.ddoc)).then(function() {
+              couch.clearCache();
+              console.log("Push complete!");
+              if (!hasConsole) {
+                setTimeout(function () {
+                  $("body").removeClass("max_console");
+                }, 2000);
+              }
+            });
+          }).fail(function() {
+            console.log("failed");
+            console.log(arguments);
           });
-        });
       });
     }
 
@@ -248,14 +278,21 @@ define(function(require, exports, module) {
       }
     });
 
-    $("#dblistbtn").bind('mousedown', function() {
+    $("#treeview").bind('mousedown', function() {
       ensureNotMinimised();
-      $("#dblisting").show();
-      $("#files").hide();
+      loadddoc(localData.config.selectedDb, localData.config.selectedDdoc);
     });
 
-    $("#couchapplist").bind('change', function() {
-      loadDb($(this).val());
+    $("#settingsbtn").bind('mousedown', function() {
+      ensureNotMinimised();
+      $("#inner > div").hide();
+      $("#settings").show();
+    });
+
+    $("#dblistbtn").bind('mousedown', function() {
+      ensureNotMinimised();
+      $("#inner > div").hide();
+      $("#dblisting").show();
     });
 
     $("#push").bind('mousedown', function() {
@@ -309,8 +346,26 @@ define(function(require, exports, module) {
       });
     });
 
-    Router.init();
+    Router.post('!/login/', function (ev, data) {
+      $.ajax({
+        url: "/_session",
+        type: 'POST',
+        data: {name: data.username, password:data.password}
+      }).done(function() {
+        renderLogin();
+      }).fail(function() {
+        $("#loginfeedback").text("Username or password was wrong");
+      });
+    });
 
+    Router.post('!/logout/', function (ev, data) {
+      $.ajax({url: "/_session", type: 'DELETE'}).done(function() {
+        renderLogin();
+      });
+    });
+
+    Router.init();
+    renderLogin();
   };
 
 });
