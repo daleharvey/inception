@@ -4,12 +4,33 @@
 
   var cache = {};
 
+  // vhosts are when you mask couchapps behind a pretty URL
+  var inVhost = function() {
+    var vhost = false;
+    if ( document.location.pathname.indexOf( "_design" ) === -1 ) {
+      vhost = true;
+    }
+    return vhost;
+  }
+
   var defaults = {
+    vhost: true,
     dataType:"json",
     contentType: "application/json",
     type: "GET",
-    url: "/"
+    couch: "couch", // needs to be defined in rewrites.json
+    db: "api", // needs to be defined in rewrites.json
+    design: "ddoc", // needs to be defined in rewrites.json
+    url: "/",
+    host: document.location.href.split( "/" )[ 2 ]
   };
+  
+  if ( !inVhost() ) {
+    defaults.vhost = false
+    var real_db = document.location.href.split( '/' )[ 3 ],
+        real_ddoc = unescape( document.location.href ).split( '/' )[ 5 ];
+    defaults.url = "/" + real_db + "/_design/" + real_ddoc + "/_rewrite/";
+  }
 
   function makeRequest(opts) {
     var key = JSON.stringify(opts);
@@ -32,14 +53,19 @@
   };
 
   couch.get = function(url) {
-    return makeRequest({url:url, type:'GET'});
+    return makeRequest({url: defaults.url + defaults.couch + url, type:'GET'});
+  };
+      
+  couch.allDbs = function() {
+    return makeRequest($.extend({}, defaults, {
+      url: defaults.url + defaults.couch + "/_all_dbs"
+    }));
   };
 
   couch.db = function(name) {
-
     return {
       name: name,
-      uri: "/" + encodeURIComponent(name) + "/",
+      uri: defaults.url + defaults.couch + "/" + name + "/",
 
       get: function(id) {
         return makeRequest({url:this.uri + id, type:"GET"});
@@ -49,15 +75,13 @@
         return makeRequest({url:this.uri + id, type:"PUT", data:data});
       },
 
-      designDocs: function(opts) {
-        return makeRequest($.extend(defaults, {
-          url: this.uri + "_all_docs",
+      designDocs: function() {
+        return makeRequest($.extend({}, defaults, {
+          url: this.uri + "/_all_docs",
           data: {startkey:'"_design/"', endkey:'"_design0"', include_docs:true}
         }));
       }
-
     };
   };
 
 })(jQuery);
-

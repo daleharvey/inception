@@ -1,3 +1,12 @@
 [
-  {"from": "", "to": "index.html"}
+  {"from": "", "to": "index.html"},
+  {"from": "ddoc", "to": "./"},
+  {"from": "ddoc/*", "to": "./*"},
+  {"from": "api/_design/ddoc", "to": "./"},
+  {"from": "api/_design/ddoc/*", "to": "./*"},
+  {"from": "api", "to": "../../"},
+  {"from": "api/*", "to": "../../*"},
+  {"from": "couch", "to": "../../../"},
+  {"from": "couch/*", "to": "../../../*"},
+  {"from": "/*", "to": "*"}
 ]
