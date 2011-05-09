@@ -48,14 +48,6 @@ define(function(require, exports, module) {
       return html + "</ul>";
     }
 
-    function readAttachment(db, ddoc, path, cb) {
-      return $.ajax({
-        type:"GET",
-        dataType: "text",
-        url: "/" + db + "/" + ddoc + "/" + path
-      });
-    }
-
     function readView(db, ddoc, view, key) {
       var dfd = $.Deferred();
       couch.db(db).get(ddoc).done(function (data) {
@@ -81,11 +73,8 @@ define(function(require, exports, module) {
     }
 
     function loadDatabases() {
-
       return $.Deferred(function (deferred) {
-
-        couch.get("/_all_dbs").then(function (dbs) {
-
+        couch.allDbs().then(function (dbs) {
           var dbNames = _.filter(dbs, function (name) {
             return name.charAt(0) !== "_";
           });
@@ -139,7 +128,6 @@ define(function(require, exports, module) {
       fetchddoc:fetchddoc,
       loadDatabases: loadDatabases,
       generateHTML: generateHTML,
-      readAttachment:readAttachment,
       readView:readView,
       readFilter:readFilter,
       readUpdate:readUpdate,

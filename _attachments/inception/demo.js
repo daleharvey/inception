@@ -69,7 +69,6 @@ define(function(require, exports, module) {
       $("#editor").css({left:width});
     }
 
-
     FileTree.init('#files');
 
     FileTree.nodeSelected(function (node, expand) {
@@ -182,7 +181,7 @@ define(function(require, exports, module) {
         return;
       }
       var doc = attachments.shift();
-      var url = "/" + db + "/" + ddoc + "/" + doc.name;
+      var url = couch.root() + "/" + db + "/" + ddoc + "/" + doc.name;
       console.log("=> " + url);
       $.ajax({
         contentType:orig[doc.name].content_type,
@@ -263,7 +262,7 @@ define(function(require, exports, module) {
 
     $("#launch").bind('mousedown', function() {
       var match = Router.matchesCurrent("!/:db/_design/:ddoc/*rest");
-      window.open("/" + match[1] + "/_design/" + match[2] + "/index.html");
+      window.open(couch.root() + "/" + match[1] + "/_design/" + match[2] + "/index.html");
     });
 
     // Load data from config
@@ -277,7 +276,7 @@ define(function(require, exports, module) {
 
     // Setup Routes
     Router.get('!/:db/_design/:ddoc/_attachments/*file', function (db, ddoc, path) {
-      CouchData.readAttachment(db, "_design/" + ddoc, path).then(function(data) {
+      couch.db(db).getAttachment("_design/" + ddoc + "/" + path).then(function (data) {
         Buffers.openBuffer(Router.url(), data);
       });
     });
