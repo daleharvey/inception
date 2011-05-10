@@ -36,7 +36,7 @@
     var key = JSON.stringify(opts);
     if (cache[key]) {
       var dfd = $.Deferred();
-      dfd.resolve(cache[key]);
+      dfd.resolve(jQuery.extend(true, {}, cache[key]));
       return dfd.promise();
     } else {
       var ajaxOpts = $.extend({}, couch.defaults, opts);

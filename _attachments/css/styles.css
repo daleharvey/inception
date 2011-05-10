@@ -31,6 +31,16 @@ label {
     font-weight:bold;
 }
 
+fieldset {
+    border:0px;
+    margin-bottom:10px;
+}
+
+
+#settings {
+    padding:10px;
+}
+
 #editor {
     -moz-transition: all 0.2s ease-in-out;
     -webkit-transition: all 0.2s ease-in-out;
@@ -265,6 +275,9 @@ footer { background:#333; padding:5px; position:fixed; bottom:0px; left:0px; rig
     top:20px;
     bottom:0px;
 }
+#inner > div {
+    display:none;
+}
 
 #panel button {
     text-indent:-9999px;
@@ -308,11 +321,23 @@ footer { background:#333; padding:5px; position:fixed; bottom:0px; left:0px; rig
     background:url(../img/icons/list_bullets_icon.png) no-repeat center center;
 }
 
+#panel #settingsbtn {
+    background:url(../img/icons/cog_icon.png) no-repeat center center;
+}
+
+#panel #treeview {
+    background:url(../img/icons/share_icon.png) no-repeat center center;
+}
+
 #panel #launch {
     background:url(../img/icons/browser_icon.png) no-repeat center center;
 }
 #panel #push {
     background:url(../img/icons/doc_export_icon.png) no-repeat center center;
+}
+
+.panelbutton {
+    cursor:pointer;
 }
 
 .max_console #controlpanel {

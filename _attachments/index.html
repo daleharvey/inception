@@ -11,17 +11,21 @@
 
     <div id="treepane">
 
-      <button id="hide">show / Hide</button>
+      <button id="hide">Show / Hide</button>
 
       <div id="panel">
         <button class="panelbutton" id="dblistbtn" title="Browse Databases">Browse Databases</button>
+        <button class="panelbutton" id="treeview" title="Tree view">Tree View</button>
         <button class="panelbutton" id="push" title="Push Couchapp">Push Couchapp</button>
         <button class="panelbutton" id="launch" title="Launch Couchapp">Launch Couchapp</button>
+        <button class="panelbutton" id="settingsbtn" title="Settings">Settings</button>
       </div>
 
       <div id="inner">
         <div id="files"></div>
         <div id="dblisting"></div>
+        <div id="settings">
+        </div>
       </div>
     </div>
 
@@ -36,6 +40,28 @@
     <div id="editor"></div>
     <div id="overlay"></div>
 
+    <script type="text/html" id="loggedin">
+      {{name}} Logged in
+      <form action="#!/logout/">
+        <input type="submit" value="Logout" />
+      </form>
+    </script>
+
+    <script type="text/html" id="loggedout">
+      <form action="#!/login/">
+        <fieldset>
+          <label for="username">Username:</label>
+          <input name="username" type="text" />
+        </fieldset>
+        <fieldset>
+          <label for="password">Password:</label>
+          <input name="password" type="password" />
+        </fieldset>
+        <input type="submit" value="Login" />
+        <div id="loginfeedback"></div>
+      </form>
+    </script>
+
     <!-- <div class="dialog" id="properties_dlg"> -->
     <!--     <h2>Properties</h2> -->
     <!--     <div class="realcontent"> -->
@@ -45,9 +71,10 @@
     <!--     </div> -->
     <!-- </div> -->
 
-    <script src="js/jquery-1.5.2.min.js"></script>
+    <script src="js/jquery-1.6.min.js"></script>
     <script src="js/jquery.couch2.js"></script>
 
+    <script src="js/mustache.js"></script>
     <script src="js/underscore.js"></script>
     <script src="js/buffers.js"></script>
 
