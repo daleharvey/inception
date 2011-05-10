@@ -86,13 +86,11 @@ define(function(require, exports, module) {
 
         couch.get("/_all_dbs").then(function (dbs) {
 
-          var dbNames = _.filter(dbs, function (name) {
-            return name.charAt(0) !== "_";
-          });
-
-          $.when.apply(this, _.map(dbNames, designDocs)).then(function () {
+          $.when.apply(this, _.map(dbs, designDocs)).then(function () {
             _.each(arguments, function(ddoc, i) {
-              databases[dbNames[i]] = ddoc[0].rows;
+              if (dbs[i].charAt(0) !== "_") {
+                databases[dbs[i]] = ddoc[0].rows;
+              }
             });
             deferred.resolve(databases);
           });
