@@ -306,6 +306,10 @@ footer { background:#333; padding:5px; position:fixed; bottom:0px; left:0px; rig
     background:#555 url(../img/icons/playback_rew_icon.png) no-repeat 8px center;
 }
 
+#hide:hover, .minimised #hide:hover  { 
+    background-color:#777;
+}
+
 .minimised #hide {
     background:#555 url(../img/icons/playback_ff_icon.png) no-repeat 8px center;
 }
@@ -354,7 +358,6 @@ footer { background:#333; padding:5px; position:fixed; bottom:0px; left:0px; rig
     left:0px;
     right:0px;
 }
-
 #consolewrapper {
     position:absolute;
     bottom:0px;
