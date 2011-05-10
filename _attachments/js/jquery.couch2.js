@@ -4,6 +4,12 @@
 
   var cache = {};
 
+  couch.defaults = {
+    dataType:"json",
+    contentType: "application/json",
+    type: "GET"
+  };
+
   // vhosts are when you mask couchapps behind a pretty URL
   var inVhost = function() {
     var vhost = false;
@@ -12,24 +18,25 @@
     }
     return vhost;
   }
-
-  couch.defaults = {
-    vhost: true,
-    dataType:"json",
-    contentType: "application/json",
-    type: "GET",
-    couch: "couch", // needs to be defined in rewrites.json
-    db: "api", // needs to be defined in rewrites.json
-    design: "ddoc", // needs to be defined in rewrites.json
-    url: "/",
-    host: document.location.href.split( "/" )[ 2 ]
-  };
   
-  if ( !inVhost() ) {
-    couch.defaults.vhost = false
-    var real_db = document.location.href.split( '/' )[ 3 ],
-        real_ddoc = unescape( document.location.href ).split( '/' )[ 5 ];
-    couch.defaults.url = "/" + real_db + "/_design/" + real_ddoc + "/_rewrite/";
+  if ( inVhost() ) {
+    $.extend(couch.defaults, {
+      // these need to be defined in rewrites.json
+      couch: "couch", // requires secure_rewrites = false
+      db: "api",
+      design: "ddoc",
+      host: document.location.href.split( "/" )[ 2 ]
+    })
+  } else {    
+    var db = document.location.href.split( '/' )[ 3 ],
+        ddoc = unescape( document.location.href ).split( '/' )[ 5 ];
+    $.extend(couch.defaults, {
+      vhost: false,
+      couch: "/",
+      db: db,
+      design: ddoc,
+      host: document.location.href.split( "/" )[ 2 ]
+    })
   }
 
   function makeRequest(opts) {
@@ -53,7 +60,8 @@
   };
   
   couch.root = function() {
-    return couch.defaults.url + couch.defaults.couch;
+    // TODO https support
+    return "http://" + couch.defaults.host + couch.defaults.couch;      
   }
 
   couch.get = function(url) {
@@ -62,14 +70,14 @@
       
   couch.allDbs = function() {
     return makeRequest($.extend({}, couch.defaults, {
-      url: couch.root() + "/_all_dbs"
+      url: couch.root() + "_all_dbs"
     }));
   };
 
   couch.db = function(name) {
     return {
       name: name,
-      uri: couch.root() + "/" + name + "/",
+      uri: couch.root() + name + "/",
 
       get: function(id) {
         return makeRequest({url:this.uri + id, type:"GET"});
@@ -91,7 +99,7 @@
 
       designDocs: function() {
         return makeRequest($.extend({}, couch.defaults, {
-          url: this.uri + "/_all_docs",
+          url: this.uri + "_all_docs",
           data: {startkey:'"_design/"', endkey:'"_design0"', include_docs:true}
         }));
       }
