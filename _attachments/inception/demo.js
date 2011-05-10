@@ -189,10 +189,10 @@ define(function(require, exports, module) {
 
         jQuery.each(attachments, function(_, requestData) {
           function makeRequest(data) {
-            var revpos = parseInt(data.rev.split("-")[0], 10);
-            orig[requestData.name].revpos = revpos;
+            delete orig[requestData.name].revpos;
             return $.ajax({
               type: "PUT",
+              contentType: orig[requestData.name].content_type,
               headers: {"Accept":"application/json"},
               url: "/" + db + "/" + ddoc + "/" + requestData.name + "?rev=" + data.rev,
               data: requestData.data,
