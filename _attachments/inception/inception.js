@@ -290,6 +290,8 @@ define(function(require, exports, module) {
 
     $("#expandcontrolpanel").bind('mousedown', function () {
       $("body").toggleClass("max_console");
+      localData.config.maxConsole = $("body").is(".max_console");
+      persistLocalStorage();
     });
 
     $("#dblisting").live('mousedown', function(e) {
