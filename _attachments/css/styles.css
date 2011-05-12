@@ -36,6 +36,7 @@ fieldset {
     margin-bottom:10px;
 }
 
+p { margin-bottom:1em; }
 
 #settings {
     padding:10px;
@@ -133,7 +134,6 @@ footer { background:#333; padding:5px; position:fixed; bottom:0px; left:0px; rig
 }
 
 #overlay {
-    display:none;
     height: 100%;
     left: 0;
     position: fixed;
@@ -159,7 +159,6 @@ footer { background:#333; padding:5px; position:fixed; bottom:0px; left:0px; rig
 }
 .dialog {
     /* background: -moz-linear-gradient(100% 100% 107deg, #FFFFFF, #F4F9FB); */
-    display:none;
     position:absolute;
     z-index:200;
     left:50%;
@@ -306,7 +305,7 @@ footer { background:#333; padding:5px; position:fixed; bottom:0px; left:0px; rig
     background:#555 url(../img/icons/playback_rew_icon.png) no-repeat 8px center;
 }
 
-#hide:hover, .minimised #hide:hover  { 
+#hide:hover, .minimised #hide:hover  {
     background-color:#777;
 }
 
@@ -386,3 +385,7 @@ footer { background:#333; padding:5px; position:fixed; bottom:0px; left:0px; rig
 
 .logmsg { border-bottom:1px solid #666;  color: #CCCCCC;
     padding: 2px;}
+
+#login_form {
+    padding:10px;
+}

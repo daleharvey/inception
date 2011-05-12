@@ -38,7 +38,6 @@
     </div>
 
     <div id="editor"></div>
-    <div id="overlay"></div>
 
     <script type="text/html" id="loggedin">
       {{name}} Logged in
@@ -48,7 +47,15 @@
     </script>
 
     <script type="text/html" id="loggedout">
-      <form action="#!/login/">
+      You are not logged in
+      <input type="submit" id="loginbtn" value="Login" />
+    </script>
+
+    <script type="text/html" id="login_dialog_tpl">
+      <h2>Login</h2>
+      <form action="#!/login/" id="login_form">
+        <div id="loginfeedback"></div>
+        <p>{{message}}</p>
         <fieldset>
           <label for="username">Username:</label>
           <input name="username" type="text" />
@@ -58,18 +65,9 @@
           <input name="password" type="password" />
         </fieldset>
         <input type="submit" value="Login" />
-        <div id="loginfeedback"></div>
+        <input type="submit" class="close" value="Cancel" />
       </form>
     </script>
-
-    <!-- <div class="dialog" id="properties_dlg"> -->
-    <!--     <h2>Properties</h2> -->
-    <!--     <div class="realcontent"> -->
-    <!--       <table cellspacing="10"> -->
-    <!--         <tr><td><label>Username:</label></td><td><input type="text" id="username" /></td></tr> -->
-    <!--         <tr><td><label>Password:</label></td><td><input type="password" id="password" /></td></tr> -->
-    <!--     </div> -->
-    <!-- </div> -->
 
     <script src="js/jquery-1.6.min.js"></script>
     <script src="js/jquery.couch2.js"></script>

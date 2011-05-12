@@ -38,10 +38,11 @@ define(function(require, exports, module) {
       console.log = function(data) {
         if (tmp) {
           try {
-            tmp(data);
+            tmp.apply(arguments);
           } catch(err) { }
         }
-        $log.append("<div class='logmsg'>" + (data && data.toString()) + "</div>");
+        var $logmsg = $("<div class='logmsg'></div>").text(data && data.toString());
+        $log.append($logmsg);
         $log.attr({scrollTop: $log.attr("scrollHeight") });
       };
     })();
@@ -224,6 +225,30 @@ define(function(require, exports, module) {
       });
     }
 
+    function showLogin(message, loggedIn) {
+
+      var $dialog = $("<div class='dialog'>" + render("#login_dialog_tpl", {message: message }) + "</div>");
+      var $overlay = $("<div id='overlay'>&nbsp;</div>");
+
+      var closeDialog = function() {
+        $dialog.remove();
+        $overlay.remove();
+      };
+
+      $dialog.find(".close").bind('mousedown', function() {
+        closeDialog();
+      });
+
+      $(document).bind("login", function() {
+        closeDialog();
+        if (loggedIn) {
+          loggedIn();
+        }
+      });
+
+      $("body").append($overlay).append($dialog);
+    }
+
     function doPush() {
 
       Buffers.ensureUpdated();
@@ -258,8 +283,9 @@ define(function(require, exports, module) {
               }
             });
           }).fail(function() {
-            console.log("failed");
-            console.log(arguments);
+            showLogin("Please login to push this couchapp.", function() {
+              doPush();
+            });
           });
       });
     }
@@ -303,6 +329,10 @@ define(function(require, exports, module) {
       env.editor.resize();
     });
 
+    $("#loginbtn").live('mousedown', function() { 
+        showLogin("");
+    });
+
     $("#launch").bind('mousedown', function() {
       var match = Router.matchesCurrent("!/:db/_design/:ddoc/*rest");
       window.open("/" + match[1] + "/_design/" + match[2] + "/index.html");
@@ -323,7 +353,8 @@ define(function(require, exports, module) {
 
     // Setup Routes
     Router.get('!/:db/_design/:ddoc/_attachments/*file', function (db, ddoc, path) {
-      CouchData.readAttachment(db, "_design/" + ddoc, path).then(function(data) {
+      CouchData.readAttachment(db, "_design/" + ddoc, path).then(function(data, status, xhr) {
+        //console.log(xhr.getResponseHeader("Content-Type"));
         Buffers.openBuffer(Router.url(), data);
       });
     });
@@ -352,7 +383,7 @@ define(function(require, exports, module) {
         type: 'POST',
         data: {name: data.username, password:data.password}
       }).done(function() {
-        renderLogin();
+        $(document).trigger('login');
       }).fail(function() {
         $("#loginfeedback").text("Username or password was wrong");
       });
@@ -360,12 +391,16 @@ define(function(require, exports, module) {
 
     Router.post('!/logout/', function (ev, data) {
       $.ajax({url: "/_session", type: 'DELETE'}).done(function() {
-        renderLogin();
+        $(document).trigger('logout');
       });
     });
 
+
+    $(document).bind('login logout', function() {
+      renderLogin();
+    }); renderLogin();
+
     Router.init();
-    renderLogin();
   };
 
 });
