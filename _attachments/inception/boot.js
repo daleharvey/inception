@@ -38,7 +38,6 @@
 require({
     paths: {
       inception: "../inception",
-      demo: "../demo",
       ace: "../lib/ace",
       cockpit: "../support/cockpit/lib/cockpit",
       pilot: "../support/pilot/lib/pilot"
@@ -46,7 +45,7 @@ require({
 });
 
 var deps = [ "pilot/fixoldbrowsers", "pilot/plugin_manager", "pilot/settings",
-             "pilot/environment", "inception/demo" ];
+             "pilot/environment", "inception/inception" ];
 
 var plugins = [ "pilot/index", "cockpit/index", "ace/defaults" ];
 require(deps, function() {
@@ -54,7 +53,7 @@ require(deps, function() {
   catalog.registerPlugins(plugins).then(function() {
     var env = require("pilot/environment").create();
     catalog.startupPlugins({ env: env }).then(function() {
-      require("inception/demo").launch(env);
+      require("inception/inception").launch(env);
     });
   });
 });
