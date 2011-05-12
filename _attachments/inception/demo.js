@@ -38,7 +38,7 @@ define(function(require, exports, module) {
       console.log = function(data) {
         if (tmp) {
           try {
-            tmp.apply(arguments);
+            tmp.apply(null, arguments);
           } catch(err) { }
         }
         var $logmsg = $("<div class='logmsg'></div>").text(data && data.toString());
