@@ -6,8 +6,6 @@ define(function(require, exports, module) {
     var Renderer = require("ace/virtual_renderer").VirtualRenderer;
     var theme = require("ace/theme/twilight");
 
-    var JavaScriptMode = require("ace/mode/javascript").Mode;
-
     var Router = require("router").Router;
     var FileTree = require("filetree").FileTree;
     var CouchData = require("couchdata").CouchData;
@@ -22,13 +20,13 @@ define(function(require, exports, module) {
 
     var container = document.getElementById("editor");
     env.editor = new Editor(new Renderer(container, theme));
-    env.editor.getSession().setMode(new JavaScriptMode());
+
+    var Buffers = require("buffers").Buffers;
+    Buffers.setEditor(env.editor);
 
     window.onresize = function onResize() {
       env.editor.resize();
     }; window.onresize();
-
-    var Buffers = IBuffers.Buffers(env.editor);
 
     // Intercept console.logs and display them in our own log as well
     (function() {
@@ -329,7 +327,7 @@ define(function(require, exports, module) {
       env.editor.resize();
     });
 
-    $("#loginbtn").live('mousedown', function() { 
+    $("#loginbtn").live('mousedown', function() {
         showLogin("");
     });
 
@@ -354,8 +352,7 @@ define(function(require, exports, module) {
     // Setup Routes
     Router.get('!/:db/_design/:ddoc/_attachments/*file', function (db, ddoc, path) {
       CouchData.readAttachment(db, "_design/" + ddoc, path).then(function(data, status, xhr) {
-        //console.log(xhr.getResponseHeader("Content-Type"));
-        Buffers.openBuffer(Router.url(), data);
+        Buffers.openBuffer(Router.url(), data, xhr.getResponseHeader("Content-Type"));
       });
     });
 

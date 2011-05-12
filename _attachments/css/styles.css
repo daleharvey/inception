@@ -373,7 +373,7 @@ footer { background:#333; padding:5px; position:fixed; bottom:0px; left:0px; rig
     margin:0px 10px;
 }
 #console {
-    font-family: "Courier New","Andale Mono",monospace;
+    font-family: "Courier New","Andale Mono", monospace;
     border-radius:3px;
     border:0px;
     padding:2px;
