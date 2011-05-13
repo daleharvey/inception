@@ -10,14 +10,6 @@ define(function(require, exports, module) {
     var FileTree = require("filetree").FileTree;
     var CouchData = require("couchdata").CouchData;
 
-    var $db = null,
-        databases = [],
-        databasesFetched = 0,
-        designDocs = {},
-        designDocName = null,
-        designDocObj = null,
-        openFile;
-
     var container = document.getElementById("editor");
     env.editor = new Editor(new Renderer(container, theme));
 
