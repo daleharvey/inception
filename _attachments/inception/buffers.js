@@ -86,10 +86,13 @@ define(function(require, exports, module) {
     }
 
     function dirtyBuffers() {
-      // return _(_buffers).chain().filter(function(val, key) { return val.dirty(); })
-      //   .map(function(val, key) { console.log(arguments);return {key:key, val:val}; })
-      //   .value();
-      return _buffers;
+      var dirty = {};
+      for(var x in _buffers) {
+        if (_buffers[x].dirty()) {
+          dirty[x] = _buffers[x];
+        }
+      }
+      return dirty;
     }
 
     function ensureUpdated() {

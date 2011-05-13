@@ -171,11 +171,10 @@ define(function(require, exports, module) {
     function saveAttachments(attachments, orig, db, ddoc, rev, callback) {
 
       var promise;
-
       if (attachments.length === 0) {
         var defer = $.Deferred();
         promise = defer.promise();
-        defer.resolveWith(rev, "success", promise);
+        defer.resolveWith(this, [{rev:rev}, "success", promise]);
       } else {
 
         jQuery.each(attachments, function(_, requestData) {
@@ -365,6 +364,12 @@ define(function(require, exports, module) {
     Router.get('!/:db/_design/:ddoc/updates/:update', function (db, ddoc, update) {
       CouchData.readUpdate(db, "_design/" + ddoc, update).then(function(data) {
         Buffers.openBuffer(Router.url(), data);
+      });
+    });
+
+    Router.get('!/:db/_design/:ddoc/*file', function (db, ddoc, path) {
+      CouchData.readKey(db, "_design/" + ddoc, path.split("/")).then(function(data) {
+        Buffers.openBuffer(Router.url(), data, "text/plain");
       });
     });
 

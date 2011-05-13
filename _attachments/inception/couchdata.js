@@ -79,6 +79,19 @@ define(function(require, exports, module) {
       });
       return dfd.promise();
     }
+    
+    function readKey(db, ddoc, key) {
+      var dfd = $.Deferred();
+      couch.db(db).get(ddoc).done(function (data) {
+        var obj = data;
+        do {
+            var nkey = key.shift();
+            obj = obj[nkey];
+        } while(key.length > 0)
+        dfd.resolve(obj);
+      });
+      return dfd.promise();
+    }
 
     function loadDatabases() {
 
@@ -139,6 +152,7 @@ define(function(require, exports, module) {
       generateHTML: generateHTML,
       readAttachment:readAttachment,
       readView:readView,
+      readKey:readKey,
       readFilter:readFilter,
       readUpdate:readUpdate,
       asHTML: asHTML,

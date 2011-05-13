@@ -110,8 +110,8 @@ define(function(require, exports, module) {
       return url().match(toRegex(needle));
     }
 
-    function match(needle, url) {
-      return (url || url()).match(toRegex(needle));
+    function match(needle, uri) {
+      return (uri || url()).match(toRegex(needle));
     }
 
     function url() {
