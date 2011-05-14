@@ -270,7 +270,11 @@ define(function(require, exports, module) {
                   $("body").removeClass("max_console");
                 }, 2000);
               }
-            });
+            }).fail(function() {
+              showLogin("Please login to push this couchapp.", function() {
+                doPush();
+              })
+            })
           }).fail(function() {
             showLogin("Please login to push this couchapp.", function() {
               doPush();

@@ -5,6 +5,7 @@
   var cache = {};
 
   var defaults = {
+    headers: {"Accept":"application/json"},
     dataType:"json",
     contentType: "application/json",
     type: "GET",
