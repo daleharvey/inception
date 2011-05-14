@@ -353,24 +353,6 @@ define(function(require, exports, module) {
       });
     });
 
-    Router.get('!/:db/_design/:ddoc/views/:view/:type', function (db, ddoc, view, type) {
-      CouchData.readView(db, "_design/" + ddoc, view, type).then(function(data) {
-        Buffers.openBuffer(Router.url(), data);
-      });
-    });
-
-    Router.get('!/:db/_design/:ddoc/filters/:filter', function (db, ddoc, filter) {
-      CouchData.readFilter(db, "_design/" + ddoc, filter).then(function(data) {
-        Buffers.openBuffer(Router.url(), data);
-      });
-    });
-
-    Router.get('!/:db/_design/:ddoc/updates/:update', function (db, ddoc, update) {
-      CouchData.readUpdate(db, "_design/" + ddoc, update).then(function(data) {
-        Buffers.openBuffer(Router.url(), data);
-      });
-    });
-
     Router.get('!/:db/_design/:ddoc/*file', function (db, ddoc, path) {
       CouchData.readKey(db, "_design/" + ddoc, path.split("/")).then(function(data) {
         Buffers.openBuffer(Router.url(), data, "text/plain");

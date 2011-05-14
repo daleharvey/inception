@@ -56,30 +56,6 @@ define(function(require, exports, module) {
       });
     }
 
-    function readView(db, ddoc, view, key) {
-      var dfd = $.Deferred();
-      couch.db(db).get(ddoc).done(function (data) {
-        dfd.resolve(data.views[view][key]);
-      });
-      return dfd.promise();
-    }
-
-    function readFilter(db, ddoc, filter) {
-      var dfd = $.Deferred();
-      couch.db(db).get(ddoc).done(function (data) {
-        dfd.resolve(data.filters[filter]);
-      });
-      return dfd.promise();
-    }
-
-    function readUpdate(db, ddoc, update) {
-      var dfd = $.Deferred();
-      couch.db(db).get(ddoc).done(function (data) {
-        dfd.resolve(data.updates[update]);
-      });
-      return dfd.promise();
-    }
-    
     function readKey(db, ddoc, key) {
       var dfd = $.Deferred();
       couch.db(db).get(ddoc).done(function (data) {
@@ -151,10 +127,7 @@ define(function(require, exports, module) {
       loadDatabases: loadDatabases,
       generateHTML: generateHTML,
       readAttachment:readAttachment,
-      readView:readView,
       readKey:readKey,
-      readFilter:readFilter,
-      readUpdate:readUpdate,
       asHTML: asHTML,
       transformDDoc:transformDDoc
     };
