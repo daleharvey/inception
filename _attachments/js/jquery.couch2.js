@@ -12,7 +12,7 @@
     url: "/"
   };
 
-  function makeRequest(opts) {
+  couch.makeRequest = function(opts) {
     var key = JSON.stringify(opts);
     if (cache[key]) {
       var dfd = $.Deferred();
@@ -33,7 +33,7 @@
   };
 
   couch.get = function(url) {
-    return makeRequest({url:url, type:'GET'});
+    return couch.makeRequest({url:url, type:'GET'});
   };
 
   couch.db = function(name) {
@@ -43,15 +43,15 @@
       uri: "/" + encodeURIComponent(name) + "/",
 
       get: function(id) {
-        return makeRequest({url:this.uri + id, type:"GET"});
+        return couch.makeRequest({url:this.uri + id, type:"GET"});
       },
 
       put: function(id, data) {
-        return makeRequest({url:this.uri + id, type:"PUT", data:data});
+        return couch.makeRequest({url:this.uri + id, type:"PUT", data:data});
       },
 
       designDocs: function(opts) {
-        return makeRequest($.extend(defaults, {
+        return couch.makeRequest($.extend(defaults, {
           url: this.uri + "_all_docs",
           data: {startkey:'"_design/"', endkey:'"_design0"', include_docs:true}
         }));
