@@ -58,6 +58,7 @@ define(function(require, exports, module) {
       contentType = contentType.split(";")[0];
       var tmp = {
           "application/x-javascript":"javascript",
+          "application/javascript":"javascript",
           "text/css":"css",
           "text/html":"html"
       };
