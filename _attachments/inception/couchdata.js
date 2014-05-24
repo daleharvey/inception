@@ -74,12 +74,12 @@ define(function(require, exports, module) {
       return $.Deferred(function (deferred) {
 
         couch.get("/_all_dbs").then(function (dbs) {
-
+          
+          dbs = _.reject(dbs, function(db) { return db.charAt(0) === "_" });
+          
           $.when.apply(this, _.map(dbs, designDocs)).then(function () {
             _.each(arguments, function(ddoc, i) {
-              if (dbs[i].charAt(0) !== "_") {
-                databases[dbs[i]] = ddoc[0].rows;
-              }
+              databases[dbs[i]] = ddoc.rows;
             });
             deferred.resolve(databases);
           });
