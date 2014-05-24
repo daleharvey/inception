@@ -230,6 +230,7 @@ footer { background:#333; padding:5px; position:fixed; bottom:0px; left:0px; rig
 .expanded {
     margin-top:0px;
     -moz-transform: rotate(45deg);
+    -webkit-transform: rotate(45deg);
 }
 
 .db {
